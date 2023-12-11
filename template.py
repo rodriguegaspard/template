@@ -63,7 +63,9 @@ def createTemplate(type, name):
     else:
         file_extension = os.path.splitext(match_list[0])[1]
         new_file = name + file_extension
-        os.rename(os.path.join(os.fspath(TEMPLATE_DIRECTORY), match_list[0]), new_file)
+        with open(os.path.join(os.fspath(TEMPLATE_DIRECTORY), match_list[0]), 'rb') as source:
+            with open(new_file, 'wb') as destination:
+                destination.write(source.read())
 
 parser = argparse.ArgumentParser(description='Creates templates for various programming languages and projects.')
 parser.add_argument("type", metavar="type", nargs="?", help='Type of the template')
