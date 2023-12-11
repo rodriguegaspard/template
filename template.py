@@ -1,7 +1,10 @@
 import argparse
 import xdg
 import os
+import re
 import requests
+
+TEMPLATE_DIRECTORY = os.path.join(xdg.XDG_CONFIG_HOME, "template/templates")
 
 def downloadTemplates(directory):
     # GitHub info
@@ -31,30 +34,47 @@ def downloadTemplates(directory):
         print("Failed to retrieve templates from GitHub API")
 
 def initConfig():
-    template_directory = os.path.join(xdg.XDG_CONFIG_HOME, "template/templates")
     try:
-        os.makedirs(template_directory)
+        os.makedirs(TEMPLATE_DIRECTORY)
     except OSError:
         return None
     print("Created config folder at " + str(xdg.XDG_CONFIG_HOME))
-    downloadTemplates(template_directory)
+    downloadTemplates(TEMPLATE_DIRECTORY)
     
 def listTemplates():
-    template_directory = os.path.join(xdg.XDG_CONFIG_HOME, "template/templates")
-    for filename in os.listdir(template_directory):
-        print(os.path.splitext(filename)[0])
+    result_string = ""
+    for filename in os.listdir(TEMPLATE_DIRECTORY):
+        result_string += "\n" + os.path.splitext(filename)[0]
+    return result_string
+
+def createTemplate(type, name):
+    pattern = ".*" + type + ".*"
+    match_list = []
+    for filename in os.listdir(TEMPLATE_DIRECTORY):
+        if re.match(pattern, filename):
+            match_list.append(filename)
+    if len(match_list) == 0:
+        print("No matches found for the template type. Here's the list of available templates.")
+        print(listTemplates())
+    elif len(match_list) > 1:
+        print("Type is ambiguous. Please select the desired template.")
+        for type in match_list:
+            print(type)
+    else:
+        file_extension = os.path.splitext(match_list[0])[1]
+        new_file = name + file_extension
+        os.rename(os.path.join(os.fspath(TEMPLATE_DIRECTORY), match_list[0]), new_file)
 
 parser = argparse.ArgumentParser(description='Creates templates for various programming languages and projects.')
-parser.add_argument("input", metavar="type", nargs="?", help='Type of the template')
-parser.add_argument("input", metavar="name", nargs="?", help='Name of the template')
+parser.add_argument("type", metavar="type", nargs="?", help='Type of the template')
+parser.add_argument("name", metavar="name", nargs="?", help='Name of the template')
 parser.add_argument("-l", "--list", action="store_true", default=False, help="Lists the different templates available.")
 args = parser.parse_args()
 
 initConfig()
 if args.list:
-    listTemplates()
-elif not args.input:
+    print(listTemplates())
+elif not args.type or not args.name:
     print("A type and name are expected.")
 else:
-    print("Other stuff")
-
+    createTemplate(args.type, args.name)
