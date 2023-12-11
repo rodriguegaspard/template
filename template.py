@@ -1,10 +1,10 @@
 import argparse
-import xdg
 import os
 import re
 import requests
 
-TEMPLATE_DIRECTORY = os.path.join(xdg.XDG_CONFIG_HOME, "template/templates")
+# Template directory. Use whatever you like.
+TEMPLATE_DIRECTORY = "/home/rosco/files/templates" 
 
 def downloadTemplates(directory):
     # GitHub info
@@ -38,7 +38,7 @@ def initConfig():
         os.makedirs(TEMPLATE_DIRECTORY)
     except OSError:
         return None
-    print("Created config folder at " + str(xdg.XDG_CONFIG_HOME))
+    print("Created config folder at " + TEMPLATE_DIRECTORY)
     downloadTemplates(TEMPLATE_DIRECTORY)
     
 def listTemplates():
@@ -69,11 +69,14 @@ parser = argparse.ArgumentParser(description='Creates templates for various prog
 parser.add_argument("type", metavar="type", nargs="?", help='Type of the template')
 parser.add_argument("name", metavar="name", nargs="?", help='Name of the template')
 parser.add_argument("-l", "--list", action="store_true", default=False, help="Lists the different templates available.")
+parser.add_argument("-d", "--download", action="store_true", default=False, help="Download the templates from GitHub.")
 args = parser.parse_args()
 
 initConfig()
 if args.list:
     print(listTemplates())
+if args.download:
+    downloadTemplates(TEMPLATE_DIRECTORY)
 elif not args.type or not args.name:
     print("A type and name are expected.")
 else:

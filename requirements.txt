@@ -7,4 +7,3 @@ pyinstaller==6.3.0
 pyinstaller-hooks-contrib==2023.10
 requests==2.31.0
 urllib3==2.1.0
-xdg==6.0.0
