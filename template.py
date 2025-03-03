@@ -4,7 +4,8 @@ import re
 import requests
 
 # Template directory. Use whatever you like.
-TEMPLATE_DIRECTORY = "/home/rosco/files/templates" 
+TEMPLATE_DIRECTORY = "/home/rosco/files/templates"
+
 
 def downloadTemplates(directory):
     # GitHub info
@@ -33,6 +34,7 @@ def downloadTemplates(directory):
     else:
         print("Failed to retrieve templates from GitHub API")
 
+
 def initConfig():
     try:
         os.makedirs(TEMPLATE_DIRECTORY)
@@ -40,12 +42,14 @@ def initConfig():
         return None
     print("Created config folder at " + TEMPLATE_DIRECTORY)
     downloadTemplates(TEMPLATE_DIRECTORY)
-    
+
+
 def listTemplates():
     result_string = ""
     for filename in os.listdir(TEMPLATE_DIRECTORY):
         result_string += "\n" + os.path.splitext(filename)[0]
     return result_string
+
 
 def createTemplate(type, name):
     pattern = ".*" + type + ".*"
